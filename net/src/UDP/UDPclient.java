@@ -6,7 +6,7 @@ import java.util.Scanner;
 public class UDPclient {
     public static void main(String[] args) {
         String host = "localhost";
-        int port = 12346; // UDP-Server-Port
+        int port = 12346;
         Scanner scanner = new Scanner(System.in);
 
         try (DatagramSocket socket = new DatagramSocket()) {
