@@ -2,11 +2,14 @@ package domainlogic;
 
 import kuchen.Allergen;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Automat {
+public class Automat implements Serializable {
+
+    private static final long serialVersionUID = 1L; 
 
     private final Kuchen[] kuchenFaecher;
     private final boolean[] belegteFaecher;

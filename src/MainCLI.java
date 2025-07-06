@@ -1,13 +1,14 @@
 import cli.CLI;
 import domainlogic.Automat;
 import domainlogic.EventSystem;
+import io.AutomatIO; // Add this import
 
 public class MainCLI {
     public static void main(String[] args) {
         EventSystem eventSystem = new EventSystem();
-        // vordefinierte Kapazität, wollte EventSystem implementieren aber doch keine Zeit
         Automat automat = new Automat(20, eventSystem);
-        CLI cli = new CLI(automat);
+        AutomatIO automatIO = new AutomatIO(); // Create IO instance
+        CLI cli = new CLI(automat, automatIO); // Pass to CLI
         cli.run();
     }
 }

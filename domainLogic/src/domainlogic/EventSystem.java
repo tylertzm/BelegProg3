@@ -1,9 +1,11 @@
 package domainlogic;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EventSystem {
+public class EventSystem implements Serializable {
+    private static final long serialVersionUID = 1L; 
 
     public interface EventListener {
         void onEvent(Event event);

@@ -1,34 +1,51 @@
 package domainlogic;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import kuchen.Allergen;
 
+import java.io.*;
 import java.time.LocalDate;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-public class Kuchen {
+public class Kuchen implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    private final IntegerProperty fach;
-    private final StringProperty name;
-    private final StringProperty sorte;
-    private final StringProperty hersteller;
-    private final ObjectProperty<LocalDate> inspectionDate;
-    private final Set<Allergen> allergene;
+    // Serializable fields (backing values)
+    private int fachValue;
+    private String nameValue;
+    private String sorteValue;
+    private String herstellerValue;
+    private LocalDate inspectionDateValue;
+    private Set<Allergen> allergene;
+
+    // Transient JavaFX properties
+    private transient IntegerProperty fach;
+    private transient StringProperty name;
+    private transient StringProperty sorte;
+    private transient StringProperty hersteller;
+    private transient ObjectProperty<LocalDate> inspectionDate;
 
     public Kuchen(int fach, String name, String sorte, String hersteller, LocalDate inspectionDate, Set<Allergen> allergene) {
-        this.fach = new SimpleIntegerProperty(fach);
-        this.name = new SimpleStringProperty(name);
-        this.sorte = new SimpleStringProperty(sorte);
-        this.hersteller = new SimpleStringProperty(hersteller);
-        this.inspectionDate = new SimpleObjectProperty<>(inspectionDate);
+        this.fachValue = fach;
+        this.nameValue = name;
+        this.sorteValue = sorte;
+        this.herstellerValue = hersteller;
+        this.inspectionDateValue = inspectionDate;
         this.allergene = allergene;
+
+        initProperties();
     }
 
+    private void initProperties() {
+        this.fach = new SimpleIntegerProperty(fachValue);
+        this.name = new SimpleStringProperty(nameValue);
+        this.sorte = new SimpleStringProperty(sorteValue);
+        this.hersteller = new SimpleStringProperty(herstellerValue);
+        this.inspectionDate = new SimpleObjectProperty<>(inspectionDateValue);
+    }
+
+    // Getters and setters using properties
     public int getFach() {
         return fach.get();
     }
@@ -39,6 +56,7 @@ public class Kuchen {
 
     public void setFach(int fach) {
         this.fach.set(fach);
+        this.fachValue = fach;
     }
 
     public String getName() {
@@ -51,6 +69,7 @@ public class Kuchen {
 
     public void setName(String name) {
         this.name.set(name);
+        this.nameValue = name;
     }
 
     public String getSorte() {
@@ -63,6 +82,7 @@ public class Kuchen {
 
     public void setSorte(String sorte) {
         this.sorte.set(sorte);
+        this.sorteValue = sorte;
     }
 
     public String getHersteller() {
@@ -75,6 +95,7 @@ public class Kuchen {
 
     public void setHersteller(String hersteller) {
         this.hersteller.set(hersteller);
+        this.herstellerValue = hersteller;
     }
 
     public LocalDate getInspectionDate() {
@@ -85,8 +106,9 @@ public class Kuchen {
         return inspectionDate;
     }
 
-    public void setInspectionDate(LocalDate inspectionDate) {
-        this.inspectionDate.set(inspectionDate);
+    public void setInspectionDate(LocalDate date) {
+        this.inspectionDate.set(date);
+        this.inspectionDateValue = date;
     }
 
     public Set<Allergen> getAllergene() {
@@ -94,11 +116,31 @@ public class Kuchen {
     }
 
     public String getAllergeneString() {
-        if (allergene == null || allergene.isEmpty()) {
-            return "";
-        }
-        return allergene.stream()
-                .map(Allergen::toString)
-                .collect(java.util.stream.Collectors.joining(", "));
+        if (allergene == null || allergene.isEmpty()) return "";
+        return allergene.stream().map(Allergen::toString).collect(Collectors.joining(", "));
+    }
+
+    @Override
+    public String toString() {
+        return "Fach: " + getFach() + ", Name: " + getName() + ", Sorte: " + getSorte() +
+                ", Hersteller: " + getHersteller() + ", Datum: " + getInspectionDate() +
+                ", Allergene: " + getAllergeneString();
+    }
+
+    // Custom serialization to handle transient JavaFX properties
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        // update values before saving
+        fachValue = getFach();
+        nameValue = getName();
+        sorteValue = getSorte();
+        herstellerValue = getHersteller();
+        inspectionDateValue = getInspectionDate();
+
+        out.defaultWriteObject(); // save all serializable fields
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject(); // restore all serializable fields
+        initProperties();       // recreate transient JavaFX properties from values
     }
 }

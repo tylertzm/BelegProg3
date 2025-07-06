@@ -2,20 +2,31 @@ package cli;
 
 import domainlogic.Automat;
 import domainlogic.EventSystem;
+import io.AutomatIO; // Add this import
 
 import java.time.LocalDate;
 import java.util.Scanner;
 
 public class CLI {
 
-    private final Automat automat;
+    private Automat automat;
+    private final AutomatIO automatIO; // Add this field
 
-    public CLI(Automat automat) {
+    public CLI(Automat automat, AutomatIO automatIO) { // Update constructor
         this.automat = automat;
+        this.automatIO = automatIO;
     }
 
 
     public void run() {
+        // Beim Start versuchen zu laden
+        try {
+            automat = (Automat) automatIO.loadAutomat("automat.ser");
+            System.out.println("Automat automatisch geladen.");
+        } catch (Exception e) {
+            System.out.println("Kein gespeicherter Automat gefunden, starte mit leerem Automaten.");
+        }
+
         Scanner scanner = new Scanner(System.in);
         System.out.println("Kommandozeile gestartet. Befehle: c for einfuegen, r for anzeigen, u for aendern, d for loeschen, und x for exit");
 
@@ -36,6 +47,8 @@ public class CLI {
                 case "r" -> handleAnzeigen();
                 case "u" -> handleAendern(tokens);
                 case "d" -> handleLoeschen(tokens);
+                case "save" -> handleSave();
+                case "load" -> handleLoad();
                 default -> System.out.println("Unbekannter Befehl: " + command);
             }
         }
@@ -43,21 +56,13 @@ public class CLI {
 
 
     private void handleEinfuegen(String[] tokens) {
-    //    if (tokens.length < 4) {
-    //        System.out.println("Verwendung: einfuegen <Name> <Sorte> <Hersteller>");
-        //       return;
-    //    }
-
-    //    String name = tokens[1];
-    //    String sorte = tokens[2];
-    //    String hersteller = tokens[3];
-    // einfuegen vordefiniertes Kuchens, oder???
         int fach = automat.einfuegen("Schokokuchen", "Torte", "Hersteller X");
         if (fach == -1) {
             System.out.println("Automat ist voll. Kuchen konnte nicht hinzugefuegt werden.");
         } else {
             System.out.println("Der vordefinierter Kuchen Schokokuchen mit der Sorte Torte vom Hersteller X wurde im Fach " + fach + " eingefuegt.");
         }
+        handleSave(); // Automatisch speichern
     }
 
 
@@ -86,6 +91,7 @@ public class CLI {
 
             if (automat.updateDate(fach, neuesDatum)) {
                 System.out.println("Inspektionsdatum für Fach " + fach + " auf " + neuesDatum + " aktualisiert.");
+                handleSave(); // Automatisch speichern
             } else {
                 System.out.println("Ungueltige Fachnummer oder Fach leer.");
             }
@@ -107,6 +113,7 @@ public class CLI {
             int fach = Integer.parseInt(tokens[1]);
             if (automat.loeschen(fach)) {
                 System.out.println("Kuchen aus Fach " + fach + " gelöscht.");
+                handleSave(); // Automatisch speichern
             } else {
                 System.out.println("Fach leer oder ungueltig.");
             }
@@ -115,5 +122,23 @@ public class CLI {
         }
     }
 
+
+    private void handleSave() {
+        try {
+            automatIO.saveAutomat(automat, "automat.ser");
+            System.out.println("Automat gespeichert.");
+        } catch (Exception e) {
+            System.out.println("Fehler beim Speichern: " + e.getMessage());
+        }
+    }
+
+    private void handleLoad() {
+        try {
+            automat = (Automat) automatIO.loadAutomat("automat.ser");
+            System.out.println("Automat geladen.");
+        } catch (Exception e) {
+            System.out.println("Fehler beim Laden: " + e.getMessage());
+        }
+    }
 
 }
