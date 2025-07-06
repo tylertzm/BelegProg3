@@ -1,5 +1,13 @@
-# Übung 4
-Erstellen Sie die graphische Oberfläche für die Geschäftslogik.
+# Übung 6
+Erweitern Sie das CLI als Client-Server-Lösung. Der Client soll dabei die Oberfläche zur Bedienung realisieren und der Server die Geschäftslogik enthalten.
+
+Die Berücksichtigung von Skalierbarkeit, Sicherheit und Transaktionskontrollen ist nicht gefordert.
+
+Die Observer müssen nicht im Netzwerk funktionieren.
+
+Clients und Servers haben jeweils eine eigene main-Methode (IntelliJ kann mehrere Applikationen parallel ausführen).
+
+Weitere Informationen stehen im Anforderungsdokument unter der Überschrift net.
 
 ## Abgabeanforderungen
 Die Abgabe hat als zip-Datei zu erfolgen, die ein lauffähiges IntelliJ-IDEA-Projekt enthält. Sie sollte die befüllte Checkliste im root des Projektes (neben der iml-Datei) enthalten in der der erreichte Stand bezüglich des Bewertungsschemas vermerkt ist.
@@ -21,19 +29,16 @@ Flüchtige Quellen, wie Sprachmodelle, sind per screen shot zu dokumentieren.
 - [ ] keine Umlaute, Sonderzeichen, etc. in Datei- und Pfadnamen
 - [ ] kompilierbar
 - [ ] Trennung zwischen Test- und Produktiv-Code
-- [ ] main-Methoden nur im default package des module belegProg3
+- [ ] main-Methoden nur im default package des module belegProg3, nicht in den sub modules
 - [ ] keine vorgetäuschte Funktionalität (inkl. leere Tests)
 - [ ] ausführbar
-- [ ] CRUD für mindestens eine Kuchensorte in der GUI
-- [ ] Geschäfts- und Darstellungslogik getrennt (mindestens 2-Schichten-Architektur)
+- [ ] CRUD für eine Kuchensorte via TCP oder UDP
+- [ ] Trennung zwischen Oberfläche (Client) und Geschäftslogik (Server)
 
 ### empfohlene Realisierungen als Vorbereitung auf den Beleg
-werden überprüft (aber nicht bewertet), wenn hier in der vorgegebenen Reihenfolge als bearbeitet angegeben
-- [ ] Auflistungen sind immer sichtbar und werden automatisch aktualisiert
-- [ ] FXML verwendet
-- [ ] sortierbare Darstellung der Kuchen mit Fachnummer, Hersteller*in, Inspektionsdatum und verbleibender Haltbarkeit
-- [ ] skalierbare Darstellung
-- [ ] data binding verwendet
-- [ ] Benutzeroberfläche wird nicht gesperrt (Nebenläufigkeit)
-- [ ] Austausch der Fachnummern mittels drag&drop
 
+werden überprüft (aber nicht bewertet), wenn hier in der vorgegebenen Reihenfolge als bearbeitet angegeben   
+
+- [ ] je ein Stellvertreter-Test für Einfügen und Anzeigen pro Server
+- [ ] Implementierung von Client und Server für TCP und UDP
+- [ ] Unterstützung mehrerer konkurierender Clients pro Server (TCP oder UDP)
