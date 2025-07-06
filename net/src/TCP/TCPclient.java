@@ -1,4 +1,4 @@
-package cli;
+package TCP;
 
 import java.io.*;
 import java.net.Socket;

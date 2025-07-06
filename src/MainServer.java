@@ -1,4 +1,4 @@
-import net.TCPserver;
+import TCP.TCPserver;
 
 public class MainServer {
     public static void main(String[] args) {

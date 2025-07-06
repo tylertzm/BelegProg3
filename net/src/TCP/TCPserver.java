@@ -1,6 +1,8 @@
-package net;
+package TCP;
 
 import domainlogic.Automat;
+import domainlogic.EventSystem;
+import io.AutomatIO;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -8,10 +10,21 @@ import java.net.Socket;
 import java.time.LocalDate;
 
 public class TCPserver {
-    private final Automat automat;
+    private Automat automat;
+    private final AutomatIO automatIO = new AutomatIO();
+    private final int capacity;
 
     public TCPserver(int capacity) {
-        this.automat = new Automat(capacity);
+        this.capacity = capacity;
+        EventSystem eventSystem = new EventSystem();
+        // Try to load persisted Automat
+        try {
+            automat = (Automat) automatIO.loadAutomat("automat.ser");
+            System.out.println("Automat geladen.");
+        } catch (Exception e) {
+            automat = new Automat(capacity, eventSystem);
+            System.out.println("Neuer Automat gestartet.");
+        }
     }
 
     public void start(int port) throws IOException {
@@ -44,39 +57,51 @@ public class TCPserver {
         String[] tokens = input.split(" ");
         String cmd = tokens[0];
 
-        return switch (cmd) {
+        switch (cmd) {
             case "c" -> {
                 int fach = automat.einfuegen("Schokokuchen", "Torte", "Hersteller X");
-                yield fach == -1
+                saveAutomat();
+                return fach == -1
                         ? "Automat ist voll."
                         : "Kuchen eingefügt in Fach " + fach;
             }
             case "r" -> {
                 String list = automat.auflisten();
-                yield list.isEmpty() ? "Keine Kuchen vorhanden." : list;
+                return list.isEmpty() ? "Keine Kuchen vorhanden." : list;
             }
             case "u" -> {
-                if (tokens.length != 3) yield "Verwendung: u <fachnummer> <JJJJ-MM-TT>";
+                if (tokens.length != 3) return "Verwendung: u <fachnummer> <JJJJ-MM-TT>";
                 try {
                     int fach = Integer.parseInt(tokens[1]);
                     LocalDate date = LocalDate.parse(tokens[2]);
-                    yield automat.updateDate(fach, date)
-                            ? "Datum aktualisiert."
-                            : "Ungültiges Fach.";
+                    boolean ok = automat.updateDate(fach, date);
+                    if (ok) saveAutomat();
+                    return ok ? "Datum aktualisiert." : "Ungültiges Fach.";
                 } catch (Exception e) {
-                    yield "Fehler: " + e.getMessage();
+                    return "Fehler: " + e.getMessage();
                 }
             }
             case "d" -> {
-                if (tokens.length != 2) yield "Verwendung: d <fachnummer>";
+                if (tokens.length != 2) return "Verwendung: d <fachnummer>";
                 try {
                     int fach = Integer.parseInt(tokens[1]);
-                    yield automat.loeschen(fach) ? "Kuchen gelöscht." : "Ungültiges Fach.";
+                    boolean ok = automat.loeschen(fach);
+                    if (ok) saveAutomat();
+                    return ok ? "Kuchen gelöscht." : "Ungültiges Fach.";
                 } catch (Exception e) {
-                    yield "Fehler: " + e.getMessage();
+                    return "Fehler: " + e.getMessage();
                 }
             }
             default -> "Unbekannter Befehl.";
-        };
+        }
+    }
+
+    private void saveAutomat() {
+        try {
+            automatIO.saveAutomat(automat, "automat.ser");
+            System.out.println("Automat gespeichert.");
+        } catch (IOException e) {
+            System.err.println("Fehler beim Speichern des Automaten: " + e.getMessage());
+        }
     }
 }
