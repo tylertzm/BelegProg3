@@ -6,7 +6,7 @@ public class TCPclient {
     private static final String SERVER_ADDRESS = "localhost";
     private static final int PORT = 12345;
 
-    public static void main(String[] args) {
+    public void start() {
         try (Socket socket = new Socket(SERVER_ADDRESS, PORT);
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));

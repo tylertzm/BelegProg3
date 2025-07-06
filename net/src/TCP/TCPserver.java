@@ -150,11 +150,4 @@ public class TCPserver {
             return "Fehler beim Laden: " + e.getMessage();
         }
     }
-
-    public static void main(String[] args) {
-        Automat automat = new Automat(10); // Assuming Automat has a constructor with capacity
-        AutomatIO automatIO = new AutomatIO();
-        TCPserver server = new TCPserver(automat, automatIO);
-        server.start();
-    }
 }
