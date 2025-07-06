@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class Automat implements Serializable {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
     private final Kuchen[] kuchenFaecher;
     private final boolean[] belegteFaecher;
@@ -62,14 +62,22 @@ public class Automat implements Serializable {
 
         return fach;
     }
-
     public synchronized String auflisten() {
         StringBuilder sb = new StringBuilder();
-        Arrays.stream(kuchenFaecher)
-                .filter(Objects::nonNull)
-                .forEach(k -> sb.append(k.toString()).append("\n"));
-        return sb.toString();
+        for (int i = 0; i < kuchenFaecher.length; i++) {
+            if (belegteFaecher[i] && kuchenFaecher[i] != null) {
+                sb.append("Fach: ").append(i)
+                  .append(", Name: ").append(kuchenFaecher[i].getName())
+                  .append(", Sorte: ").append(kuchenFaecher[i].getSorte())
+                  .append(", Hersteller: ").append(kuchenFaecher[i].getHersteller())
+                  .append(", Inspektionsdatum: ").append(kuchenFaecher[i].getInspectionDate())
+                  .append(", Allergene: ").append(kuchenFaecher[i].getAllergene())
+                  .append("\n");
+            }
+        }
+        return sb.toString().trim();
     }
+
 
     public synchronized boolean loeschen(int fach) {
         if (fach >= 0 && fach < kuchenFaecher.length && belegteFaecher[fach]) {
@@ -79,6 +87,7 @@ public class Automat implements Serializable {
         }
         return false;
     }
+
 
     public synchronized boolean updateDate(int fach, LocalDate newDate) {
         if (fach >= 0 && fach < kuchenFaecher.length && belegteFaecher[fach]) {

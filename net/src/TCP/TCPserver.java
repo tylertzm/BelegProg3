@@ -1,7 +1,4 @@
-package TCP;
-
 import domainlogic.Automat;
-import domainlogic.EventSystem;
 import io.AutomatIO;
 
 import java.io.*;
@@ -10,98 +7,154 @@ import java.net.Socket;
 import java.time.LocalDate;
 
 public class TCPserver {
+    private static final int PORT = 12345;
     private Automat automat;
-    private final AutomatIO automatIO = new AutomatIO();
-    private final int capacity;
+    private final AutomatIO automatIO;
 
-    public TCPserver(int capacity) {
-        this.capacity = capacity;
-        EventSystem eventSystem = new EventSystem();
-        // Try to load persisted Automat
-        try {
-            automat = (Automat) automatIO.loadAutomat("automat.ser");
-            System.out.println("Automat geladen.");
-        } catch (Exception e) {
-            automat = new Automat(capacity, eventSystem);
-            System.out.println("Neuer Automat gestartet.");
-        }
+    public TCPserver(Automat automat, AutomatIO automatIO) {
+        this.automat = automat;
+        this.automatIO = automatIO;
     }
 
-    public void start(int port) throws IOException {
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("TCP Server läuft auf Port " + port);
+    public void start() {
+        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+            System.out.println("Server gestartet und lauscht auf Port " + PORT);
+
+            // Beim Start versuchen zu laden
+            try {
+                automat = (Automat) automatIO.loadAutomat("automat.ser");
+                System.out.println("Automat automatisch geladen.");
+            } catch (Exception e) {
+                System.out.println("Kein gespeicherter Automat gefunden, starte mit leerem Automaten.");
+            }
 
             while (true) {
-                Socket clientSocket = serverSocket.accept();
-                new Thread(() -> handleClient(clientSocket)).start();
-            }
-        }
-    }
+                try (Socket clientSocket = serverSocket.accept();
+                     BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                     PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
 
-    private void handleClient(Socket socket) {
-        try (
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true)
-        ) {
-            String input;
-            while ((input = in.readLine()) != null) {
-                String response = processCommand(input);
-                out.println(response);
+                    System.out.println("Neue Client-Verbindung: " + clientSocket.getInetAddress());
+                    String input = in.readLine();
+                    if (input == null) continue;
+
+                    String[] tokens = input.split("\\s+");
+                    String command = tokens[0].toLowerCase();
+                    String response = processCommand(command, tokens);
+
+                    out.println(response);
+                } catch (IOException e) {
+                    System.err.println("Fehler bei Client-Verbindung: " + e.getMessage());
+                }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Server konnte nicht gestartet werden: " + e.getMessage());
         }
     }
 
-    private String processCommand(String input) {
-        String[] tokens = input.split(" ");
-        String cmd = tokens[0];
-
-        switch (cmd) {
-            case "c" -> {
-                int fach = automat.einfuegen("Schokokuchen", "Torte", "Hersteller X");
-                saveAutomat();
-                return fach == -1
-                        ? "Automat ist voll."
-                        : "Kuchen eingefügt in Fach " + fach;
+    private String processCommand(String command, String[] tokens) {
+        try {
+            switch (command) {
+                case "c":
+                    return handleEinfuegen();
+                case "r":
+                    return handleAnzeigen();
+                case "u":
+                    return handleAendern(tokens);
+                case "d":
+                    return handleLoeschen(tokens);
+                case "save":
+                    return handleSave();
+                case "load":
+                    return handleLoad();
+                default:
+                    return "Unbekannter Befehl: " + command;
             }
-            case "r" -> {
-                String list = automat.auflisten();
-                return list.isEmpty() ? "Keine Kuchen vorhanden." : list;
-            }
-            case "u" -> {
-                if (tokens.length != 3) return "Verwendung: u <fachnummer> <JJJJ-MM-TT>";
-                try {
-                    int fach = Integer.parseInt(tokens[1]);
-                    LocalDate date = LocalDate.parse(tokens[2]);
-                    boolean ok = automat.updateDate(fach, date);
-                    if (ok) saveAutomat();
-                    return ok ? "Datum aktualisiert." : "Ungültiges Fach.";
-                } catch (Exception e) {
-                    return "Fehler: " + e.getMessage();
-                }
-            }
-            case "d" -> {
-                if (tokens.length != 2) return "Verwendung: d <fachnummer>";
-                try {
-                    int fach = Integer.parseInt(tokens[1]);
-                    boolean ok = automat.loeschen(fach);
-                    if (ok) saveAutomat();
-                    return ok ? "Kuchen gelöscht." : "Ungültiges Fach.";
-                } catch (Exception e) {
-                    return "Fehler: " + e.getMessage();
-                }
-            }
-            default -> "Unbekannter Befehl.";
+        } catch (Exception e) {
+            return "Fehler: " + e.getMessage();
         }
     }
 
-    private void saveAutomat() {
+    private String handleEinfuegen() {
+        int fach = automat.einfuegen("Schokokuchen", "Torte", "Hersteller X");
+        if (fach == -1) {
+            return "Automat ist voll. Kuchen konnte nicht hinzugefuegt werden.";
+        } else {
+            handleSave();
+            return "Der vordefinierte Kuchen Schokokuchen mit der Sorte Torte vom Hersteller X wurde im Fach " + fach + " eingefuegt.";
+        }
+    }
+
+    private String handleAnzeigen() {
+        String liste = automat.auflisten();
+        if (liste.isEmpty()) {
+            return "Keine Kuchen vorhanden.";
+        } else {
+            return liste;
+        }
+    }
+
+    private String handleAendern(String[] tokens) {
+        if (tokens.length != 3) {
+            return "Verwendung: u <fachnummer> <JJJJ-MM-TT>\nBitte geben Sie das Datum im Format JJJJ-MM-TT ein.";
+        }
+
+        try {
+            int fach = Integer.parseInt(tokens[1]);
+            LocalDate neuesDatum = LocalDate.parse(tokens[2]);
+
+            if (automat.updateDate(fach, neuesDatum)) {
+                handleSave();
+                return "Inspektionsdatum für Fach " + fach + " auf " + neuesDatum + " aktualisiert.";
+            } else {
+                return "Ungueltige Fachnummer oder Fach leer.";
+            }
+        } catch (NumberFormatException e) {
+            return "Bitte eine gueltige Fachnummer eingeben.";
+        } catch (java.time.format.DateTimeParseException e) {
+            return "Ungültiges Datumsformat. Bitte verwenden Sie JJJJ-MM-TT.";
+        }
+    }
+
+    private String handleLoeschen(String[] tokens) {
+        if (tokens.length != 2) {
+            return "Verwendung: d <fachnummer>";
+        }
+
+        try {
+            int fach = Integer.parseInt(tokens[1]);
+            if (automat.loeschen(fach)) {
+                handleSave();
+                return "Kuchen aus Fach " + fach + " gelöscht.";
+            } else {
+                return "Fach leer oder ungueltig.";
+            }
+        } catch (NumberFormatException e) {
+            return "Bitte eine gueltige Fachnummer eingeben.";
+        }
+    }
+
+    private String handleSave() {
         try {
             automatIO.saveAutomat(automat, "automat.ser");
-            System.out.println("Automat gespeichert.");
-        } catch (IOException e) {
-            System.err.println("Fehler beim Speichern des Automaten: " + e.getMessage());
+            return "Automat gespeichert.";
+        } catch (Exception e) {
+            return "Fehler beim Speichern: " + e.getMessage();
         }
+    }
+
+    private String handleLoad() {
+        try {
+            automat = (Automat) automatIO.loadAutomat("automat.ser");
+            return "Automat geladen.";
+        } catch (Exception e) {
+            return "Fehler beim Laden: " + e.getMessage();
+        }
+    }
+
+    public static void main(String[] args) {
+        Automat automat = new Automat(10); // Assuming Automat has a constructor with capacity
+        AutomatIO automatIO = new AutomatIO();
+        TCPserver server = new TCPserver(automat, automatIO);
+        server.start();
     }
 }

@@ -1,34 +1,26 @@
-package TCP;
-
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
 public class TCPclient {
-    private final String host;
-    private final int port;
+    private static final String SERVER_ADDRESS = "localhost";
+    private static final int PORT = 12345;
 
-    public TCPclient(String host, int port) {
-        this.host = host;
-        this.port = port;
-    }
+    public static void main(String[] args) {
+        try (Socket socket = new Socket(SERVER_ADDRESS, PORT);
+             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+             Scanner scanner = new Scanner(System.in)) {
 
-    public void run() {
-        try (
-            Socket socket = new Socket(host, port);
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            Scanner scanner = new Scanner(System.in)
-        ) {
-            System.out.println("Verbunden mit Server: " + host + ":" + port);
-            System.out.println("Befehle: c, r, u <fach> <JJJJ-MM-TT>, d <fach>, x");
+            System.out.println("Verbindung zum Server hergestellt.");
+            System.out.println("Befehle: c for einfuegen, r for anzeigen, u for aendern, d for loeschen, und x for exit");
 
             while (true) {
                 System.out.print("> ");
-                String input = scanner.nextLine();
+                String input = scanner.nextLine().trim();
 
                 if (input.equalsIgnoreCase("x")) {
-                    System.out.println("Beendet.");
+                    System.out.println("Programm wird beendet...");
                     break;
                 }
 
@@ -36,9 +28,8 @@ public class TCPclient {
                 String response = in.readLine();
                 System.out.println(response);
             }
-
         } catch (IOException e) {
-            System.out.println("Verbindung zum Server fehlgeschlagen: " + e.getMessage());
+            System.err.println("Fehler bei der Verbindung zum Server: " + e.getMessage());
         }
     }
 }
