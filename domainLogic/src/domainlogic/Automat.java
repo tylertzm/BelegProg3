@@ -71,7 +71,12 @@ public class Automat implements Serializable {
                   .append(", Sorte: ").append(kuchenFaecher[i].getSorte())
                   .append(", Hersteller: ").append(kuchenFaecher[i].getHersteller())
                   .append(", Inspektionsdatum: ").append(kuchenFaecher[i].getInspectionDate())
-                  .append(", Allergene: ").append(kuchenFaecher[i].getAllergene())
+                  .append(", Allergene: ")
+                  .append(
+                      kuchenFaecher[i].getAllergene().stream()
+                          .map(Allergen::toString)
+                          .collect(Collectors.joining(", "))
+                  )
                   .append("\n");
             }
         }

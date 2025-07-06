@@ -1,34 +1,82 @@
 package UDP;
 
+import java.io.*;
 import java.net.*;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class UDPclient {
-    public static void main(String[] args) {
-        String host = "localhost";
-        int port = 12346;
+    private static final String SERVER_ADDRESS = "localhost";
+    private static final int PORT = 12345;
+    private static final int TIMEOUT = 3000; // 3 seconds timeout
+    private static final int BUFFER_SIZE = 8192;
+    private static final int MAX_RETRIES = 3;
+
+    public void start() {
         Scanner scanner = new Scanner(System.in);
+        AtomicBoolean shouldExit = new AtomicBoolean(false);
 
         try (DatagramSocket socket = new DatagramSocket()) {
-            InetAddress address = InetAddress.getByName(host);
-            System.out.println("Verbunden mit UDP-Server. Tippe 'exit' zum Beenden.");
-            while (true) {
+            socket.setSoTimeout(TIMEOUT);
+            InetAddress serverAddress = InetAddress.getByName(SERVER_ADDRESS);
+
+            System.out.println("UDP Client gestartet. Befehle: c, r, u <fach> <datum>, d <fach>, x");
+
+            while (!shouldExit.get()) {
                 System.out.print("> ");
-                String input = scanner.nextLine();
-                if ("exit".equalsIgnoreCase(input)) break;
+                String input = scanner.nextLine().trim();
 
-                byte[] sendData = input.getBytes();
-                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, address, port);
-                socket.send(sendPacket);
+                if (input.isEmpty()) continue;
 
-                byte[] receiveData = new byte[1024];
-                DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-                socket.receive(receivePacket);
-                String response = new String(receivePacket.getData(), 0, receivePacket.getLength());
-                System.out.println("Server: " + response);
+                if (input.equalsIgnoreCase("x")) {
+                    shouldExit.set(true);
+                    sendRequest(socket, serverAddress, input);
+                    System.out.println("Client wird beendet.");
+                    continue;
+                }
+
+                // Send request with retries
+                boolean receivedResponse = false;
+                for (int attempt = 0; attempt < MAX_RETRIES && !receivedResponse; attempt++) {
+                    sendRequest(socket, serverAddress, input);
+
+                    // Receive response
+                    byte[] buffer = new byte[BUFFER_SIZE];
+                    DatagramPacket responsePacket = new DatagramPacket(buffer, buffer.length);
+                    
+                    try {
+                        socket.receive(responsePacket);
+                        String response = new String(responsePacket.getData(), 0, responsePacket.getLength(), "UTF-8");
+                        
+                        if (response.equals("SERVER_SHUTDOWN")) {
+                            System.out.println("Server wurde heruntergefahren.");
+                            shouldExit.set(true);
+                        } else {
+                            System.out.println(response);
+                        }
+                        receivedResponse = true;
+                    } catch (SocketTimeoutException e) {
+                        if (attempt == MAX_RETRIES - 1) {
+                            System.err.println("Timeout: Keine Antwort vom Server erhalten nach " + MAX_RETRIES + " Versuchen.");
+                        }
+                    }
+                }
             }
-        } catch (Exception e) {
-            System.out.println("Fehler: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("Client Fehler: " + e.getMessage());
+        } finally {
+            scanner.close();
         }
+    }
+
+    private void sendRequest(DatagramSocket socket, InetAddress address, String message) throws IOException {
+        byte[] requestData = message.getBytes("UTF-8");
+        DatagramPacket requestPacket = new DatagramPacket(
+            requestData, 
+            requestData.length, 
+            address, 
+            PORT
+        );
+        socket.send(requestPacket);
     }
 }
