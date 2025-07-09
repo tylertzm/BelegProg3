@@ -1,7 +1,7 @@
 import domainlogic.Automat;
 import domainlogic.EventSystem;
 import io.AutomatIO;
-import UDP.UDPserver;
+import udp.UDPserver;
 
 public class MainUDPServer {
     public static void main(String[] args) {

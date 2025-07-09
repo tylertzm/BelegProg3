@@ -1,4 +1,4 @@
-package UDP;
+package udp;
 
 import domainlogic.Automat;
 import io.AutomatIO;
@@ -8,26 +8,33 @@ import java.time.LocalDate;
 import java.util.concurrent.*;
 import kuchen.Allergen;
 
-
 public class UDPserver {
-    private static final int PORT = 12345;
+    // --- Felder und Konstanten ---
+    private static final int PORT = 10000;
     private static final int BUFFER_SIZE = 8192;
     private DatagramSocket socket;
     private Automat automat;
     private final AutomatIO automatIO;
     private final ExecutorService threadPool;
 
+    // --- Konstruktor ---
     public UDPserver(Automat automat, AutomatIO automatIO) {
         this.automat = automat;
         this.automatIO = automatIO;
         this.threadPool = Executors.newFixedThreadPool(10);
     }
 
+    // --- Server-Start ---
     public void start() {
         try {
             socket = new DatagramSocket(PORT);
             System.out.println("UDP Server gestartet auf Port " + PORT);
             loadAutomatState();
+
+//	After receiving a packet, the server:
+//	Hands off the work to a worker thread from the thread pool.
+//	That worker calls handleRequest(packet), which parses the command, runs logic, and sends a response.
+//	This way, the main thread can immediately go back to listening for the next packet, without waiting for the response to finish.
 
             while (!Thread.currentThread().isInterrupted()) {
                 byte[] buffer = new byte[BUFFER_SIZE];
@@ -45,6 +52,7 @@ public class UDPserver {
         }
     }
 
+    // --- Laden des Automaten-Zustands ---
     private void loadAutomatState() {
         try {
             automat = (Automat) automatIO.loadAutomat("automat.ser");
@@ -54,6 +62,7 @@ public class UDPserver {
         }
     }
 
+    // --- Anfragebearbeitung (Empfangen, Verarbeiten, Antworten) ---
     private void handleRequest(DatagramPacket requestPacket) {
         try {
             String input = new String(requestPacket.getData(), 0, requestPacket.getLength()).trim();
@@ -76,6 +85,7 @@ public class UDPserver {
         }
     }
 
+    // --- Befehl-Dispatching ---
     private synchronized String processCommand(String command, String[] tokens) {
         try {
             switch (command) {
@@ -93,6 +103,7 @@ public class UDPserver {
         }
     }
 
+    // --- Einzelne Befehle ---
     private String handleEinfuegen() {
         int fach = automat.einfuegen("Schokokuchen", "Torte", "Hersteller X", Allergen.Gluten);
         if (fach == -1) {
@@ -111,24 +122,21 @@ public class UDPserver {
         if (tokens.length != 3) {
             return "Verwendung: u <fachnummer> <JJJJ-MM-TT>";
         }
-
         try {
             int fach = Integer.parseInt(tokens[1]);
             LocalDate neuesDatum = LocalDate.parse(tokens[2]);
-            
             if (neuesDatum.isBefore(LocalDate.now())) {
                 return "Datum darf nicht in der Vergangenheit liegen";
             }
-
             if (automat.updateDate(fach, neuesDatum)) {
                 handleSave();
                 return "Inspektionsdatum aktualisiert.";
             }
-            return "Ungültige Fachnummer oder Fach leer.";
+            return "Ungueltige Fachnummer oder Fach leer.";
         } catch (NumberFormatException e) {
-            return "Ungültige Fachnummer";
+            return "Ungueltige Fachnummer";
         } catch (java.time.format.DateTimeParseException e) {
-            return "Ungültiges Datumsformat. Verwenden Sie JJJJ-MM-TT.";
+            return "Ungueltiges Datumsformat. Verwenden Sie JJJJ-MM-TT.";
         }
     }
 
@@ -136,19 +144,19 @@ public class UDPserver {
         if (tokens.length != 2) {
             return "Verwendung: d <fachnummer>";
         }
-
         try {
             int fach = Integer.parseInt(tokens[1]);
             if (automat.loeschen(fach)) {
                 handleSave();
-                return "Kuchen gelöscht.";
+                return "Kuchen geloescht.";
             }
-            return "Fach leer oder ungültig.";
+            return "Fach leer oder ungueltig.";
         } catch (NumberFormatException e) {
-            return "Ungültige Fachnummer";
+            return "Ungueltige Fachnummer";
         }
     }
 
+    // --- Speichern und Laden ---
     private String handleSave() {
         try {
             automatIO.saveAutomat(automat, "automat.ser");
@@ -167,6 +175,7 @@ public class UDPserver {
         }
     }
 
+    // --- Shutdown ---
     public void shutdown() {
         threadPool.shutdown();
         if (socket != null) {

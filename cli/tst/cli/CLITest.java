@@ -63,7 +63,7 @@ class CLITest {
 
         String output = outContent.toString();
 
-        assertTrue(output.contains("Inspektionsdatum für Fach " + fachNummer + " auf 2025-12-31 aktualisiert."));
+        assertTrue(output.contains("Inspektionsdatum fuer Fach " + fachNummer + " auf 2025-12-31 aktualisiert."));
         assertTrue(output.contains("Programm wird beendet..."));
     }
 
@@ -79,7 +79,7 @@ class CLITest {
 
         String output = outContent.toString();
 
-        assertTrue(output.contains("Kuchen aus Fach " + fachNummer + " gelöscht."));
+        assertTrue(output.contains("Kuchen aus Fach " + fachNummer + " geloescht."));
         assertTrue(output.contains("Programm wird beendet..."));
     }
 
@@ -106,6 +106,6 @@ class CLITest {
 
         String output = outContent.toString();
 
-        assertTrue(output.contains("Ungültiges Datumsformat. Bitte verwenden Sie JJJJ-MM-TT."));
+        assertTrue(output.contains("Ungueltiges Datumsformat. Bitte verwenden Sie JJJJ-MM-TT."));
     }
 }

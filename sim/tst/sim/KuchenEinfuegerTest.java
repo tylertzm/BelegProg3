@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class KuchenEinfuegerTest {
 
     @Test
-    public void testEinfuegenFügtKuchenEin() throws InterruptedException {
+    public void testEinfuegenFuegtKuchenEin() throws InterruptedException {
         EventSystem eventSystem = new EventSystem();
         Automat automat = new Automat(5, eventSystem);
 

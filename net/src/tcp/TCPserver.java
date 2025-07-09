@@ -1,4 +1,5 @@
-package TCP;
+
+package tcp;
 import domainlogic.Automat;
 import io.AutomatIO;
 import kuchen.Allergen;
@@ -9,11 +10,10 @@ import java.net.Socket;
 import java.time.LocalDate;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import kuchen.Allergen;
 
 
-public class TCPserver {
-    private static final int PORT = 12345;
+public class  TCPserver {
+    private static final int PORT = 10000;
     private static final int MAX_THREADS = 10;
     private Automat automat;
     private final AutomatIO automatIO;
@@ -62,14 +62,14 @@ private void handleClient(Socket clientSocket) {
 
         System.out.println("Client verbunden: " + clientSocket.getInetAddress());
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-        
+
         String input;
         while ((input = reader.readLine()) != null) {
             System.out.println("Empfangener Befehl: " + input);
             String[] tokens = input.split("\\s+");
             String command = tokens[0].toLowerCase();
             String response = processCommand(command, tokens);
-            
+
             // Send response as bytes with end marker
             out.write(response.getBytes("UTF-8"));
             out.write("\nEND_OF_RESPONSE\n".getBytes("UTF-8"));
@@ -81,7 +81,7 @@ private void handleClient(Socket clientSocket) {
         try {
             clientSocket.close();
         } catch (IOException e) {
-            System.err.println("Fehler beim Schließen des Client-Sockets: " + e.getMessage());
+            System.err.println("Fehler beim Schliessen des Client-Sockets: " + e.getMessage());
         }
     }
 }
@@ -125,7 +125,7 @@ private void handleClient(Socket clientSocket) {
         try {
             int fach = Integer.parseInt(tokens[1]);
             LocalDate neuesDatum = LocalDate.parse(tokens[2]);
-            
+
             if (neuesDatum.isBefore(LocalDate.now())) {
                 return "Datum darf nicht in der Vergangenheit liegen";
             }
@@ -134,11 +134,11 @@ private void handleClient(Socket clientSocket) {
                 handleSave();
                 return "Inspektionsdatum aktualisiert.";
             }
-            return "Ungültige Fachnummer oder Fach leer.";
+            return "Ungueltige Fachnummer oder Fach leer.";
         } catch (NumberFormatException e) {
-            return "Ungültige Fachnummer";
+            return "Ungueltige Fachnummer";
         } catch (java.time.format.DateTimeParseException e) {
-            return "Ungültiges Datumsformat. Verwenden Sie JJJJ-MM-TT.";
+            return "Ungueltiges Datumsformat. Verwenden Sie JJJJ-MM-TT.";
         }
     }
 
@@ -151,11 +151,11 @@ private void handleClient(Socket clientSocket) {
             int fach = Integer.parseInt(tokens[1]);
             if (automat.loeschen(fach)) {
                 handleSave();
-                return "Kuchen gelöscht.";
+                return "Kuchen geloescht.";
             }
-            return "Fach leer oder ungültig.";
+            return "Fach leer oder ungueltig.";
         } catch (NumberFormatException e) {
-            return "Ungültige Fachnummer";
+            return "Ungueltige Fachnummer";
         }
     }
 

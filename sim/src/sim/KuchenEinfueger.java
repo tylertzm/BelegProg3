@@ -19,13 +19,13 @@ public class KuchenEinfueger implements Runnable {
         while (true) {
             String name = "Kuchen" + counter++;
             String sorte = "Obst";
-            String baecker = "Bäcker" + random.nextInt(10);
+            String baecker = "Baecker" + random.nextInt(10);
 
             int fach = automat.einfuegen(name, sorte, baecker, Allergen.Gluten, Allergen.Haselnuss);
             if (fach >= 0) {
-                System.out.println("Eingefügt: " + name + " in Fach " + fach);
+                System.out.println("Eingefuegt: " + name + " in Fach " + fach);
             } else {
-                System.out.println("Kein freies Fach für " + name);
+                System.out.println("Kein freies Fach fuer " + name);
             }
 
             try {

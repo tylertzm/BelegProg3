@@ -110,10 +110,10 @@ public class AutomatGUI extends Application {
         glutenfreiCheckbox = new CheckBox("Glutenfrei");
         lactosefreiCheckbox = new CheckBox("Lactosefrei");
 
-        Button einfuegenButton = new Button("Einfügen");
+        Button einfuegenButton = new Button("Einfuegen");
         einfuegenButton.setOnAction(e -> einfuegenKuchen());
 
-        Button loeschenButton = new Button("Löschen");
+        Button loeschenButton = new Button("Loeschen");
         loeschenButton.setOnAction(e -> loeschenKuchen());
 
         Button updateButton = new Button("Update");
@@ -186,7 +186,7 @@ public class AutomatGUI extends Application {
             kuchenList.remove(selectedKuchen);
         } else {
             // Show an alert if no Kuchen is selected
-            Alert alert = new Alert(Alert.AlertType.WARNING, "Bitte wählen Sie einen Kuchen zum Löschen aus.");
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Bitte waehlen Sie einen Kuchen zum Loeschen aus.");
             alert.showAndWait();
         }
     }
@@ -209,7 +209,7 @@ public class AutomatGUI extends Application {
             // Refresh the TableView
             kuchenTableView.refresh();
         } else {
-            Alert alert = new Alert(Alert.AlertType.WARNING, "Bitte wählen Sie einen Kuchen zum Aktualisieren aus.");
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Bitte waehlen Sie einen Kuchen zum Aktualisieren aus.");
             alert.showAndWait();
         }
     }

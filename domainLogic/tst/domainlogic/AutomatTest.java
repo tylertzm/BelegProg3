@@ -15,36 +15,36 @@ public class AutomatTest {
     @BeforeEach
     public void setUp() {
         eventSystem = new EventSystem();  // EventSystem instanziieren
-        automat = new Automat(3, eventSystem);  // Automat mit 3 Fächern
+        automat = new Automat(3, eventSystem);  // Automat mit 3 Faechern
     }
 
     @Test
     public void testEinfuegenAndAuflisten() {
-        int fach1 = automat.einfuegen("Schwarzwälder Kirschtorte", "Kremkuchen", "Bäckerei Müller");
+        int fach1 = automat.einfuegen("Schwarzwaelder Kirschtorte", "Kremkuchen", "Baeckerei Mueller");
         assertTrue(fach1 >= 0);
         String liste = automat.auflisten();
-        assertTrue(liste.contains("Schwarzwälder Kirschtorte"));
+        assertTrue(liste.contains("Schwarzwaelder Kirschtorte"));
     }
 
     @Test
     public void testEinfuegenBeyondCapacity() {
         automat.einfuegen("Apfelstrudel", "Obstkuchen", "Cafe Schmidt");
-        automat.einfuegen("Sachertorte", "Kremkuchen", "Bäckerei Wagner");
-        automat.einfuegen("Erdbeerkuchen", "Obstkuchen", "Bäckerei Fischer");
-        int fach4 = automat.einfuegen("Käsekuchen", "Quarkkuchen", "Bäckerei Hoffmann");
-        assertEquals(-1, fach4, "Automat sollte keine Kuchen mehr aufnehmen können");
+        automat.einfuegen("Sachertorte", "Kremkuchen", "Baeckerei Wagner");
+        automat.einfuegen("Erdbeerkuchen", "Obstkuchen", "Baeckerei Fischer");
+        int fach4 = automat.einfuegen("Kaesekuchen", "Quarkkuchen", "Baeckerei Hoffmann");
+        assertEquals(-1, fach4, "Automat sollte keine Kuchen mehr aufnehmen koennen");
     }
 
     @Test
     public void testLoeschen() {
-        int fach = automat.einfuegen("Butterkuchen", "Rührkuchen", "Bäckerei Schmidt");
+        int fach = automat.einfuegen("Butterkuchen", "Ruehrkuchen", "Baeckerei Schmidt");
         assertTrue(automat.loeschen(fach));
         assertFalse(automat.loeschen(fach), "Fach sollte jetzt leer sein");
     }
 
     @Test
     public void testUpdateDate() {
-        int fach = automat.einfuegen("Donauwelle", "Schichtkuchen", "Bäckerei Weber");
+        int fach = automat.einfuegen("Donauwelle", "Schichtkuchen", "Baeckerei Weber");
         LocalDate newDate = LocalDate.of(2025, 5, 20);
         boolean updated = automat.updateDate(fach, newDate);
         assertTrue(updated, "Inspektionsdatum sollte aktualisiert werden");
@@ -52,9 +52,9 @@ public class AutomatTest {
 
     @Test
     public void testIstVoll() {
-        automat.einfuegen("Linzer Torte", "Obstkuchen", "Bäckerei Maier");
-        automat.einfuegen("Mohnkuchen", "Rührkuchen", "Bäckerei Klein");
-        automat.einfuegen("Zitronenkuchen", "Rührkuchen", "Bäckerei Groß");
+        automat.einfuegen("Linzer Torte", "Obstkuchen", "Baeckerei Maier");
+        automat.einfuegen("Mohnkuchen", "Ruehrkuchen", "Baeckerei Klein");
+        automat.einfuegen("Zitronenkuchen", "Ruehrkuchen", "Baeckerei Gross");
         assertTrue(automat.istVoll(), "Automat sollte voll sein");
     }
 
@@ -66,7 +66,7 @@ public class AutomatTest {
     @Test
     public void testGetBelegteFaecher() {
         assertEquals(0, automat.getBelegteFaecher());
-        automat.einfuegen("Frankfurter Kranz", "Sahnekuchen", "Bäckerei Braun");
+        automat.einfuegen("Frankfurter Kranz", "Sahnekuchen", "Baeckerei Braun");
         assertEquals(1, automat.getBelegteFaecher());
     }
 }

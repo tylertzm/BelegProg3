@@ -1,7 +1,6 @@
 package cli;
 
 import domainlogic.Automat;
-import domainlogic.EventSystem;
 import io.AutomatIO; // Add this import
 
 import java.time.LocalDate;
@@ -90,7 +89,7 @@ public class CLI {
             LocalDate neuesDatum = LocalDate.parse(dateString); // Attempt to parse the input string
 
             if (automat.updateDate(fach, neuesDatum)) {
-                System.out.println("Inspektionsdatum für Fach " + fach + " auf " + neuesDatum + " aktualisiert.");
+                System.out.println("Inspektionsdatum fuer Fach " + fach + " auf " + neuesDatum + " aktualisiert.");
                 handleSave(); // Automatisch speichern
             } else {
                 System.out.println("Ungueltige Fachnummer oder Fach leer.");
@@ -98,7 +97,7 @@ public class CLI {
         } catch (NumberFormatException e) {
             System.out.println("Bitte eine gueltige Fachnummer eingeben.");
         } catch (java.time.format.DateTimeParseException e) {
-            System.out.println("Ungültiges Datumsformat. Bitte verwenden Sie JJJJ-MM-TT.");
+            System.out.println("Ungueltiges Datumsformat. Bitte verwenden Sie JJJJ-MM-TT.");
         }
     }
 
@@ -112,7 +111,7 @@ public class CLI {
         try {
             int fach = Integer.parseInt(tokens[1]);
             if (automat.loeschen(fach)) {
-                System.out.println("Kuchen aus Fach " + fach + " gelöscht.");
+                System.out.println("Kuchen aus Fach " + fach + " geloescht.");
                 handleSave(); // Automatisch speichern
             } else {
                 System.out.println("Fach leer oder ungueltig.");

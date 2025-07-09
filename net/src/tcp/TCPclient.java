@@ -1,4 +1,4 @@
-package TCP;
+package tcp;
 
 import java.io.*;
 import java.net.Socket;
@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class TCPclient {
     private static final String SERVER_ADDRESS = "localhost";
-    private static final int PORT = 12345;
+    private static final int PORT = 10000;
     private static final int RECONNECT_DELAY = 5000;
 
     public void start() {
@@ -18,7 +18,7 @@ public class TCPclient {
                  PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
 
                 System.out.println("Verbindung zum Server hergestellt.");
-                System.out.println("Befehle: c (einfügen), r (anzeigen), u <fach> <datum> (ändern), d <fach> (löschen), x (beenden)");
+                System.out.println("Befehle: c (einfuegen), r (anzeigen), u <fach> <datum> (aendern), d <fach> (loeschen), x (beenden)");
 
                 boolean running = true;
                 while (running) {
@@ -33,7 +33,7 @@ public class TCPclient {
 
                         out.println(input);
 
-                        // Read multi-line response
+                        // Mehrzeilige Antwort lesen
                         StringBuilder response = new StringBuilder();
                         String line;
                         while ((line = in.readLine()) != null) {
@@ -48,7 +48,6 @@ public class TCPclient {
                             break;
                         }
 
-                        // Print response with proper newline at the end
                         System.out.print(response.toString());
 
                     } catch (IOException e) {

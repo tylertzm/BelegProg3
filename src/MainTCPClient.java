@@ -1,4 +1,4 @@
-import TCP.TCPclient;
+import tcp.TCPclient;
 
 public class MainTCPClient {
     public static void main(String[] args) {

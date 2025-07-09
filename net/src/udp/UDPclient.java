@@ -1,4 +1,5 @@
-package UDP;
+
+package udp;
 
 import java.io.*;
 import java.net.*;
@@ -7,8 +8,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class UDPclient {
     private static final String SERVER_ADDRESS = "localhost";
-    private static final int PORT = 12345;
-    private static final int TIMEOUT = 3000; // 3 seconds timeout
+    private static final int PORT = 10000;
+    private static final int TIMEOUT = 3000; // 3 Sekunden Timeout
     private static final int BUFFER_SIZE = 8192;
     private static final int MAX_RETRIES = 3;
 
@@ -35,19 +36,19 @@ public class UDPclient {
                     continue;
                 }
 
-                // Send request with retries
+                // Senden und Empfangen mit Wiederholungen
                 boolean receivedResponse = false;
                 for (int attempt = 0; attempt < MAX_RETRIES && !receivedResponse; attempt++) {
                     sendRequest(socket, serverAddress, input);
 
-                    // Receive response
+                    // Antwort empfangen
                     byte[] buffer = new byte[BUFFER_SIZE];
                     DatagramPacket responsePacket = new DatagramPacket(buffer, buffer.length);
-                    
+
                     try {
                         socket.receive(responsePacket);
                         String response = new String(responsePacket.getData(), 0, responsePacket.getLength(), "UTF-8");
-                        
+
                         if (response.equals("SERVER_SHUTDOWN")) {
                             System.out.println("Server wurde heruntergefahren.");
                             shouldExit.set(true);
@@ -69,12 +70,13 @@ public class UDPclient {
         }
     }
 
+    // Sendet ein UDP-Paket an den Server
     private void sendRequest(DatagramSocket socket, InetAddress address, String message) throws IOException {
         byte[] requestData = message.getBytes("UTF-8");
         DatagramPacket requestPacket = new DatagramPacket(
-            requestData, 
-            requestData.length, 
-            address, 
+            requestData,
+            requestData.length,
+            address,
             PORT
         );
         socket.send(requestPacket);

@@ -1,44 +1,44 @@
-# Übung 6
-Erweitern Sie das CLI als Client-Server-Lösung. Der Client soll dabei die Oberfläche zur Bedienung realisieren und der Server die Geschäftslogik enthalten.
+# uebung 6
+Erweitern Sie das CLI als Client-Server-Loesung. Der Client soll dabei die Oberflaeche zur Bedienung realisieren und der Server die Geschaeftslogik enthalten.
 
-Die Berücksichtigung von Skalierbarkeit, Sicherheit und Transaktionskontrollen ist nicht gefordert.
+Die Beruecksichtigung von Skalierbarkeit, Sicherheit und Transaktionskontrollen ist nicht gefordert.
 
-Die Observer müssen nicht im Netzwerk funktionieren.
+Die Observer muessen nicht im Netzwerk funktionieren.
 
-Clients und Servers haben jeweils eine eigene main-Methode (IntelliJ kann mehrere Applikationen parallel ausführen).
+Clients und Servers haben jeweils eine eigene main-Methode (IntelliJ kann mehrere Applikationen parallel ausfuehren).
 
-Weitere Informationen stehen im Anforderungsdokument unter der Überschrift net.
+Weitere Informationen stehen im Anforderungsdokument unter der ueberschrift net.
 
 ## Abgabeanforderungen
-Die Abgabe hat als zip-Datei zu erfolgen, die ein lauffähiges IntelliJ-IDEA-Projekt enthält. Sie sollte die befüllte Checkliste im root des Projektes (neben der iml-Datei) enthalten in der der erreichte Stand bezüglich des Bewertungsschemas vermerkt ist.
+Die Abgabe hat als zip-Datei zu erfolgen, die ein lauffaehiges IntelliJ-IDEA-Projekt enthaelt. Sie sollte die befuellte Checkliste im root des Projektes (neben der iml-Datei) enthalten in der der erreichte Stand bezueglich des Bewertungsschemas vermerkt ist.
 
-Änderungen an der Checkliste sind grundsätzlich nicht zulässig. Davon ausgenommen ist das Befüllen der Checkboxen und ergänzende Anmerkungen die _kursiv gesetzt_ sind.
+aenderungen an der Checkliste sind grundsaetzlich nicht zulaessig. Davon ausgenommen ist das Befuellen der Checkboxen und ergaenzende Anmerkungen die _kursiv gesetzt_ sind.
 
 ## Quellen
-Zulässige Quellen sind suchmaschinen-indizierte Internetseiten. Werden mehr als drei zusammenhängende Anweisungen übernommen ist die Quelle in den Kommentaren anzugeben. Ausgeschlossen sind Quellen, die auch als Beleg oder Übungsaufgabe abgegeben werden oder wurden. Zulässig sind außerdem die über moodle bereitgestellten Materialien, diese können für die Übungsaufgaben und den Beleg ohne Quellenangabe verwendet werden.
-Flüchtige Quellen, wie Sprachmodelle, sind per screen shot zu dokumentieren.
+Zulaessige Quellen sind suchmaschinen-indizierte Internetseiten. Werden mehr als drei zusammenhaengende Anweisungen uebernommen ist die Quelle in den Kommentaren anzugeben. Ausgeschlossen sind Quellen, die auch als Beleg oder uebungsaufgabe abgegeben werden oder wurden. Zulaessig sind ausserdem die ueber moodle bereitgestellten Materialien, diese koennen fuer die uebungsaufgaben und den Beleg ohne Quellenangabe verwendet werden.
+Fluechtige Quellen, wie Sprachmodelle, sind per screen shot zu dokumentieren.
 
 ## Bewertung
-1 Punkt für die Erfüllung des Pflichtteils
+1 Punkt fuer die Erfuellung des Pflichtteils
 
 ### Pflichtteil
 - [ ] Quellen angegeben
 - [ ] zip Archiv
-- [ ] IntelliJ-Projekt (kein Gradle, Maven o.ä.)
-- [ ] keine weiteren Bibliotheken außer JUnit5, Mockito und JavaFX (und deren Abhängigkeiten)
+- [ ] IntelliJ-Projekt (kein Gradle, Maven o.ae.)
+- [ ] keine weiteren Bibliotheken ausser JUnit5, Mockito und JavaFX (und deren Abhaengigkeiten)
 - [ ] keine Umlaute, Sonderzeichen, etc. in Datei- und Pfadnamen
 - [ ] kompilierbar
 - [ ] Trennung zwischen Test- und Produktiv-Code
 - [ ] main-Methoden nur im default package des module belegProg3, nicht in den sub modules
-- [ ] keine vorgetäuschte Funktionalität (inkl. leere Tests)
-- [ ] ausführbar
-- [ ] CRUD für eine Kuchensorte via TCP oder UDP
-- [ ] Trennung zwischen Oberfläche (Client) und Geschäftslogik (Server)
+- [ ] keine vorgetaeuschte Funktionalitaet (inkl. leere Tests)
+- [ ] ausfuehrbar
+- [ ] CRUD fuer eine Kuchensorte via tcp oder udp
+- [ ] Trennung zwischen Oberflaeche (Client) und Geschaeftslogik (Server)
 
 ### empfohlene Realisierungen als Vorbereitung auf den Beleg
 
-werden überprüft (aber nicht bewertet), wenn hier in der vorgegebenen Reihenfolge als bearbeitet angegeben   
+werden ueberprueft (aber nicht bewertet), wenn hier in der vorgegebenen Reihenfolge als bearbeitet angegeben   
 
-- [ ] je ein Stellvertreter-Test für Einfügen und Anzeigen pro Server
-- [ ] Implementierung von Client und Server für TCP und UDP
-- [ ] Unterstützung mehrerer konkurierender Clients pro Server (TCP oder UDP)
+- [ ] je ein Stellvertreter-Test fuer Einfuegen und Anzeigen pro Server
+- [ ] Implementierung von Client und Server fuer tcp und udp
+- [ ] Unterstuetzung mehrerer konkurierender Clients pro Server (tcp oder udp)
